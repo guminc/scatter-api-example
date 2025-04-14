@@ -20,7 +20,9 @@ export default function Home() {
       const response = await fetch(
         `${SCATTER_API_URL}/collection/${COLLECTION_SLUG}`
       );
-      return response.json();
+      // abi comes back as a string, parsing it here to use with wagmi
+      const data = await response.json();
+      return { ...data, abi: JSON.parse(data.abi) };
     },
   });
 
@@ -57,11 +59,10 @@ function InviteList({
   collection,
 }: {
   list: {
-    id: string;
+    // id: string;
     name: string;
     root: string;
-    address: string;
-    currency_address: string;
+    // currency_address: string;
     currency_symbol: string;
     token_price: string;
     wallet_limit: number;
@@ -70,9 +71,10 @@ function InviteList({
   collection: {
     chain_id: number;
     address: string;
+    abi: any;
   };
 }) {
-  const { address, isConnected, chainId } = useAccount();
+  const { address, isConnected } = useAccount();
 
   // technically the max limit on our contract is 4294967295, we treat this as unlimited
   const MAX_LIMIT = 4294967295;
@@ -85,6 +87,7 @@ function InviteList({
       : `${list.token_price} ${list.currency_symbol}`;
 
   const { data: listMinted } = useReadContract({
+    abi: collection.abi,
     address: collection.address as `0x${string}`,
     functionName: "listSupply",
     chainId: collection.chain_id,
@@ -92,16 +95,15 @@ function InviteList({
   }) as { data: number };
 
   const { data: walletMinted } = useReadContract({
+    abi: collection.abi,
     address: collection.address as `0x${string}`,
-    functionName: "balanceOf",
+    functionName: "minted",
     chainId: collection.chain_id,
-    args: [address],
+    args: [address as `0x${string}`, list.root],
     query: {
       enabled: isConnected,
     },
   }) as { data: number };
-
-  console.log({ chainId, collection, list, listMinted, walletMinted, address });
 
   return (
     <Card>
