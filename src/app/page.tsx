@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useAppKit } from "@reown/appkit/react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { useAccount, useReadContract } from "wagmi";
 
 const SCATTER_API_URL = "https://api.scatter.art/v1";
@@ -74,7 +75,7 @@ function InviteList({
   collection,
 }: {
   list: {
-    // id: string;
+    id: string;
     name: string;
     root: string;
     // currency_address: string;
@@ -127,6 +128,22 @@ function InviteList({
     walletMinted >= list.wallet_limit ||
     collection.num_items >= collection.max_items; // if max supply is reached no lists will work
 
+  const { mutate: mint, isPending } = useMutation({
+    mutationFn: async (listId: string) => {
+      console.log({ collection });
+      const response = await fetch(`${SCATTER_API_URL}/mint`, {
+        method: "POST",
+        body: JSON.stringify({
+          collectionAddress: collection.address,
+          chainId: collection.chain_id,
+          minterAddress: address,
+          lists: [{ id: listId, quantity: 1 }],
+        }),
+      }).then((res) => res.json());
+      console.log({ response });
+    },
+  });
+
   return (
     <Card className={isListMintedOut ? "opacity-50 cursor-not-allowed" : ""}>
       <CardContent>
@@ -156,9 +173,11 @@ function InviteList({
               )}
             </div>
             <Button
-              className="h-full"
-              disabled={!isConnected || isListMintedOut}
+              className="h-full cursor-pointer"
+              disabled={!isConnected || isListMintedOut || isPending}
+              onClick={() => mint(list.id)}
             >
+              {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               MINT
             </Button>
           </div>
