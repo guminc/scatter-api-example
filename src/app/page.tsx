@@ -7,8 +7,9 @@ import { config } from "@/config";
 import { useAppKit } from "@reown/appkit/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import { erc20Abi, maxUint256 } from "viem";
 import { useAccount, useReadContract } from "wagmi";
-import { sendTransaction } from "wagmi/actions";
+import { readContract, sendTransaction, writeContract } from "wagmi/actions";
 
 const SCATTER_API_URL = "https://api.scatter.art/v1";
 
@@ -158,8 +159,25 @@ function InviteList({
 
       // If the mint costs ERC20s, we need to approve them first or the mint will fail
       // if the mint is just with the native token (eg. ETH), we can ignore this step
-      if (response.erc20s.length > 0) {
-        // TODO
+      for (const erc20 of response.erc20s) {
+        // Check if the user has enough allowance for the mint already
+        const allowance = await readContract(config, {
+          abi: erc20Abi,
+          address: erc20.address,
+          functionName: "allowance",
+          args: [address as `0x${string}`, collection.address as `0x${string}`],
+        });
+
+        // If not, approve the max amount before minting
+        if (allowance < BigInt(erc20.amount)) {
+          await writeContract(config, {
+            abi: erc20Abi,
+            address: erc20.address,
+            functionName: "approve",
+            chainId: collection.chain_id,
+            args: [collection.address as `0x${string}`, maxUint256],
+          });
+        }
       }
 
       // Now we trigger the mint transaction
