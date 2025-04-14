@@ -86,7 +86,6 @@ function InviteList({
     id: string;
     name: string;
     root: string;
-    // currency_address: string;
     currency_symbol: string;
     token_price: string;
     wallet_limit: number;
