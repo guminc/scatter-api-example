@@ -1,6 +1,8 @@
 This is a minimal [Next.js](https://nextjs.org) project intended to serve as an example of how to build your own custom minting pages for Scatter collections by utilizing our public API. We used Next.js for the example because we like it, but you can integrate the Scatter API with anything that is capable of sending web requests.
 
-All of the relevant code for learning the Scatter API is in `src/app/page.tsx`
+All of the relevant code for learning the Scatter API is in `src/app/page.tsx`.
+
+You can view a live deployment of this example at [https://scatter-api-example.guminc.dev](https://scatter-api-example.guminc.dev/).
 
 ## Getting Started
 
