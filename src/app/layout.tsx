@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
+import ContextProvider from "./ContextProvider";
 import "./globals.css";
-import { WagmiProvider } from "wagmi";
-import { config } from "@/config";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Providers from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,17 +19,19 @@ export const metadata: Metadata = {
   description: "Mint Tribes of Anime Girl with the Scatter API",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookies = (await headers()).get("cookie");
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <ContextProvider cookies={cookies}>{children}</ContextProvider>
       </body>
     </html>
   );
