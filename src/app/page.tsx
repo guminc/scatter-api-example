@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { useAppKit } from "@reown/appkit/react";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount, useReadContract } from "wagmi";
@@ -43,12 +44,26 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-items-center min-h-screen p-8 pb-20 gap-4 sm:p-12 font-[family-name:var(--font-geist-sans)]">
       <WalletConnect />
-      <main className="flex w-xl flex-col gap-4 p-4">
-        {!isPending &&
-          inviteLists?.map((list: any) => (
-            <InviteList key={list.id} list={list} collection={collection} />
-          ))}
-        {isPending && <p className="text-center">LOADING...</p>}
+      <main className="flex w-xl flex-col gap-8 p-4">
+        <div className="flex flex-col gap-2">
+          {!isCollectionPending && (
+            <>
+              <Progress
+                value={(collection.num_items / collection.max_items) * 100}
+              />
+              <p className="text-center">
+                {collection?.num_items} / {collection?.max_items}
+              </p>
+            </>
+          )}
+        </div>
+        <div className="flex flex-col gap-4">
+          {!isPending &&
+            inviteLists?.map((list: any) => (
+              <InviteList key={list.id} list={list} collection={collection} />
+            ))}
+          {isPending && <p className="text-center">LOADING...</p>}
+        </div>
       </main>
     </div>
   );
