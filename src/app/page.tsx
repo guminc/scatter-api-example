@@ -72,6 +72,8 @@ function InviteList({
     chain_id: number;
     address: string;
     abi: any;
+    max_items: number;
+    num_items: number;
   };
 }) {
   const { address, isConnected } = useAccount();
@@ -105,8 +107,13 @@ function InviteList({
     },
   }) as { data: number };
 
+  const isListMintedOut =
+    listMinted >= list.list_limit ||
+    walletMinted >= list.wallet_limit ||
+    collection.num_items >= collection.max_items; // if max supply is reached no lists will work
+
   return (
-    <Card>
+    <Card className={isListMintedOut ? "opacity-50 cursor-not-allowed" : ""}>
       <CardContent>
         <div className="flex flex-row justify-between">
           <div className="flex flex-col max-w-64">
@@ -119,7 +126,7 @@ function InviteList({
                 <div className="h-full flex items-center flex-col gap-1">
                   <p className="text-xs opacity-50">WAL. LIMIT</p>
                   <p>
-                    {walletMinted}/{list.wallet_limit}
+                    {walletMinted ?? "?"}/{list.wallet_limit}
                   </p>
                 </div>
               )}
@@ -133,7 +140,12 @@ function InviteList({
                 </div>
               )}
             </div>
-            <Button className="h-full">MINT</Button>
+            <Button
+              className="h-full"
+              disabled={!isConnected || isListMintedOut}
+            >
+              MINT
+            </Button>
           </div>
         </div>
       </CardContent>
