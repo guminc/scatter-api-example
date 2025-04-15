@@ -49,9 +49,9 @@ export default function Home() {
   const isPending = isCollectionPending || isInviteListsPending;
 
   return (
-    <div className="flex flex-col items-center justify-items-center min-h-screen p-8 pb-20 gap-4 sm:p-12 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex flex-col items-center justify-items-center min-h-screen p-4 pb-20 gap-4 sm:p-12 font-[family-name:var(--font-geist-sans)]">
       <WalletConnect />
-      <main className="flex w-xl flex-col gap-8 p-4">
+      <main className="flex lg:w-xl w-full flex-col gap-8 pt-4">
         <div className="flex flex-col gap-2">
           {!isCollectionPending && (
             <>
