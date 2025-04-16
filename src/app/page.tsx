@@ -164,6 +164,7 @@ function InviteList({
           abi: erc20Abi,
           address: erc20.address,
           functionName: "allowance",
+          chainId: collection.chain_id,
           args: [address as `0x${string}`, collection.address as `0x${string}`],
         });
 
